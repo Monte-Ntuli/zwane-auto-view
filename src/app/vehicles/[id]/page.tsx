@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import ImageGallery from "@/components/ImageGallery";
 import InquireSection from "@/components/InquireSection";
+import MobileStickyBar from "@/components/MobileStickyBar";
 import { Vehicle } from "@/types";
 
 async function getVehicle(id: string): Promise<Vehicle | null> {
@@ -51,26 +52,29 @@ export default async function VehicleDetailPage({
   ];
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    /* pb-24 on mobile leaves room for the sticky bottom bar */
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 pb-24 lg:pb-8">
       {/* Breadcrumb */}
-      <nav className="flex items-center gap-2 text-sm text-slate-500 mb-6">
-        <Link href="/" className="hover:text-blue-600 transition-colors">Home</Link>
-        <span>/</span>
-        <Link href="/vehicles" className="hover:text-blue-600 transition-colors">Vehicles</Link>
-        <span>/</span>
-        <span className="text-slate-800 font-medium">{vehicle.year} {vehicle.make} {vehicle.model}</span>
+      <nav className="flex items-center gap-1.5 text-sm text-slate-500 mb-5 sm:mb-6 min-w-0">
+        <Link href="/" className="hover:text-blue-600 transition-colors shrink-0">Home</Link>
+        <span className="shrink-0">/</span>
+        <Link href="/vehicles" className="hover:text-blue-600 transition-colors shrink-0">Vehicles</Link>
+        <span className="shrink-0">/</span>
+        <span className="text-slate-800 font-medium truncate">
+          {vehicle.year} {vehicle.make} {vehicle.model}
+        </span>
       </nav>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
         {/* Left: Gallery + Details */}
-        <div className="lg:col-span-2 space-y-6">
+        <div className="lg:col-span-2 space-y-4 sm:space-y-6">
           <ImageGallery images={vehicle.images} />
 
           {/* Title + Price */}
-          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
-            <div className="flex flex-wrap items-start justify-between gap-3">
-              <div>
-                <h1 className="text-2xl font-extrabold text-slate-900">
+          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 sm:p-5">
+            <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between sm:gap-3">
+              <div className="flex-1 min-w-0">
+                <h1 className="text-xl sm:text-2xl font-extrabold text-slate-900 leading-tight">
                   {vehicle.year} {vehicle.make} {vehicle.model}
                 </h1>
                 {vehicle.status === "sold" && (
@@ -79,21 +83,23 @@ export default async function VehicleDetailPage({
                   </span>
                 )}
               </div>
-              <div className="text-right">
-                <p className="text-3xl font-extrabold text-blue-600">{formatPrice(vehicle.price)}</p>
+              <div className="sm:text-right">
+                <p className="text-2xl sm:text-3xl font-extrabold text-blue-600">
+                  {formatPrice(vehicle.price)}
+                </p>
                 {vehicle.status === "available" && (
-                  <p className="text-xs text-green-600 font-medium mt-1">✓ Available Now</p>
+                  <p className="text-xs text-green-600 font-medium mt-0.5">✓ Available Now</p>
                 )}
               </div>
             </div>
           </div>
 
           {/* Specifications */}
-          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
+          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 sm:p-5">
             <h2 className="text-base font-bold text-slate-900 mb-4">Vehicle Specifications</h2>
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-px bg-gray-100 rounded-xl overflow-hidden border border-gray-100">
               {specs.map(({ label, value }) => (
-                <div key={label} className="bg-white p-3.5">
+                <div key={label} className="bg-white p-3 sm:p-3.5">
                   <p className="text-xs text-slate-400 uppercase tracking-wide font-medium mb-0.5">{label}</p>
                   <p className="text-sm font-semibold text-slate-800">{value}</p>
                 </div>
@@ -103,19 +109,19 @@ export default async function VehicleDetailPage({
 
           {/* Description */}
           {vehicle.description && (
-            <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
+            <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 sm:p-5">
               <h2 className="text-base font-bold text-slate-900 mb-3">Description</h2>
-              <p className="text-slate-600 text-sm leading-relaxed whitespace-pre-line">{vehicle.description}</p>
+              <p className="text-slate-600 text-sm leading-relaxed whitespace-pre-line">
+                {vehicle.description}
+              </p>
             </div>
           )}
         </div>
 
-        {/* Right: Inquiry */}
-        <div className="lg:col-span-1">
+        {/* Right: Inquiry panel — desktop only (mobile uses sticky bar) */}
+        <div className="hidden lg:block lg:col-span-1">
           <div className="sticky top-20 space-y-4">
             <InquireSection vehicle={vehicle} />
-
-            {/* Back link */}
             <Link
               href="/vehicles"
               className="flex items-center justify-center gap-2 w-full border border-gray-200 text-slate-600 hover:bg-gray-50 py-2.5 rounded-xl text-sm font-medium transition-colors"
@@ -128,6 +134,9 @@ export default async function VehicleDetailPage({
           </div>
         </div>
       </div>
+
+      {/* Mobile sticky bottom bar */}
+      <MobileStickyBar vehicle={vehicle} />
     </div>
   );
 }

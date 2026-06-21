@@ -29,8 +29,8 @@ export default async function VehiclesPage({
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
       {/* Header */}
-      <div className="mb-8">
-        <h1 className="text-3xl font-extrabold text-slate-900">Browse Vehicles</h1>
+      <div className="mb-5 sm:mb-6">
+        <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900">Browse Vehicles</h1>
         <p className="text-slate-500 mt-1 text-sm">
           {vehicles.length} vehicle{vehicles.length !== 1 ? "s" : ""} available
           {hasFilters && " matching your search"}
@@ -38,13 +38,7 @@ export default async function VehiclesPage({
       </div>
 
       {/* Filters */}
-      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 mb-8">
-        <h2 className="text-sm font-semibold text-slate-700 mb-4 flex items-center gap-2">
-          <svg className="w-4 h-4 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
-          </svg>
-          Filters
-        </h2>
+      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 sm:p-5 mb-6 sm:mb-8">
         <Suspense>
           <SearchFilterBar compact />
         </Suspense>
@@ -52,7 +46,7 @@ export default async function VehiclesPage({
 
       {/* Grid */}
       {vehicles.length > 0 ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
           {vehicles.map((v) => (
             <VehicleCard key={v.id} vehicle={v} />
           ))}
