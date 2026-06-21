@@ -1,12 +1,7 @@
 import { PrismaClient } from "@prisma/client";
-import { PrismaBetterSqlite3 } from "@prisma/adapter-better-sqlite3";
 import bcrypt from "bcryptjs";
-import path from "path";
 
-const dbPath = path.resolve(process.cwd(), "dev.db");
-const adapter = new PrismaBetterSqlite3({ url: dbPath });
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const prisma = new PrismaClient({ adapter } as any);
+const prisma = new PrismaClient();
 
 // Unsplash direct image URLs — no API key needed, reliably hosted
 const VEHICLES = [
@@ -206,25 +201,25 @@ const VEHICLES = [
 async function main() {
   console.log("🌱 Seeding database...");
 
-  // Clear existing vehicles
   await prisma.image.deleteMany();
   await prisma.vehicle.deleteMany();
   console.log("   Cleared existing vehicles.");
 
-  // Seed admin
   const existing = await prisma.admin.findFirst();
   if (!existing) {
-    const hashed = await bcrypt.hash("Admin@ZwaneAuto2024", 12);
+    const hashed = await bcrypt.hash(
+      process.env.ADMIN_PASSWORD || "Admin@ZwaneAuto2024",
+      12
+    );
     await prisma.admin.create({
       data: {
-        email: "admin@zwaneautoview.co.za",
+        email: process.env.ADMIN_EMAIL || "admin@zwaneautoview.co.za",
         password: hashed,
       },
     });
     console.log("   Created admin account.");
   }
 
-  // Seed vehicles
   for (const v of VEHICLES) {
     const { images, ...vehicleData } = v;
     await prisma.vehicle.create({
